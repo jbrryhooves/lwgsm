@@ -94,7 +94,7 @@
 /* RESET PIN */
 #define LWGSM_RESET_PORT_CLK                  LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_GPIOA)
 #define LWGSM_RESET_PORT                      GPIOA
-// #define LWGSM_RESET_PIN                       LL_GPIO_PIN_12
+#define LWGSM_RESET_PIN                       LL_GPIO_PIN_11
 
 
 // LP UART defines

@@ -730,6 +730,11 @@ lwgsmi_parse_received(lwgsm_recv_t* rcv) {
             lwgsmi_parse_cpin(rcv->data, 1 /* !CMD_IS_DEF(LWGSM_CMD_CPIN_SET) */);  /* Parse +CPIN response */
         } else if (CMD_IS_CUR(LWGSM_CMD_COPS_GET) && !strncmp(rcv->data, "+COPS", 5)) {
             lwgsmi_parse_cops(rcv->data);       /* Parse current +COPS */
+        } else if (CMD_IS_CUR(LWGSM_CMD_CNSMOD_GET) && !strncmp(rcv->data, "+CNSMOD", 7)) {   /* Check for +CNSMOD indication */
+            lwgsmi_parse_cnsmod(rcv->data); /* Parse +CNSMOD response */
+        } else if (CMD_IS_CUR(LWGSM_CMD_CMNB_GET) && !strncmp(rcv->data, "+CMNB", 5)) {   /* Check for +CMNB indication */
+            lwgsmi_parse_cmnb(rcv->data); /* Parse +CMNB response */
+        
 #if LWGSM_CFG_SMS
         } else if (CMD_IS_CUR(LWGSM_CMD_CMGS) && !strncmp(rcv->data, "+CMGS", 5)) {
             lwgsmi_parse_cmgs(rcv->data, &lwgsm.msg->msg.sms_send.pos); /* Parse +CMGS response */
@@ -970,6 +975,8 @@ lwgsmi_parse_received(lwgsm_recv_t* rcv) {
             }
 #endif /* LWGSM_CFG_USSD */
         }
+
+
     }
 
     /*
@@ -1752,9 +1759,9 @@ lwgsmi_initiate_cmd(lwgsm_msg_t* msg) {
         case LWGSM_CMD_RESET: {                 /* Reset modem with AT commands */
             /* Try with hardware reset */
             if (lwgsm.ll.reset_fn != NULL && lwgsm.ll.reset_fn(1)) {
-                lwgsm_delay(2);
+                lwgsm_delay(1000);
                 lwgsm.ll.reset_fn(0);
-                lwgsm_delay(500);
+                lwgsm_delay(1500);
             }
 
             /* Send manual AT command */
@@ -1930,6 +1937,25 @@ lwgsmi_initiate_cmd(lwgsm_msg_t* msg) {
         case LWGSM_CMD_CIPSHUT: {               /* Shut down network connection and put to reset state */
             AT_PORT_SEND_BEGIN_AT();
             AT_PORT_SEND_CONST_STR("+CIPSHUT");
+            AT_PORT_SEND_END_AT();
+            break;
+        }
+        case LWGSM_CMD_CNSMOD_GET: {                   /* Request network system mode */
+            AT_PORT_SEND_BEGIN_AT();
+            AT_PORT_SEND_CONST_STR("+CNSMOD?");
+            AT_PORT_SEND_END_AT();
+            break;
+        }
+        case LWGSM_CMD_CMNB_GET: {                   /* Request network mode preference */
+            AT_PORT_SEND_BEGIN_AT();
+            AT_PORT_SEND_CONST_STR("+CMNB?");
+            AT_PORT_SEND_END_AT();
+            break;
+        }
+        case LWGSM_CMD_CMNB_SET: {           
+            AT_PORT_SEND_BEGIN_AT();
+            AT_PORT_SEND_CONST_STR("+CMNB=");
+            lwgsmi_send_number(msg->msg.network_system_mode_preference.mode, 0, 0);
             AT_PORT_SEND_END_AT();
             break;
         }
@@ -2416,6 +2442,12 @@ lwgsmi_initiate_cmd(lwgsm_msg_t* msg) {
             break;
         }
 #endif
+#if LWGSM_CFG_NET_SYS_MODE
+
+
+#endif
+
+
         default:
             return lwgsmERR;                    /* Invalid command */
     }

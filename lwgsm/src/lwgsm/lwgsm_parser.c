@@ -346,6 +346,50 @@ lwgsmi_parse_creg(const char* str, uint8_t skip_first) {
     return 1;
 }
 
+
+/**
+ * \brief           Parse received +CNSMOD message
+ * \param[in]       str: Input string to parse from
+ * \return          1 on success, 0 otherwise
+ */
+uint8_t
+lwgsmi_parse_cnsmod(const char* str) {
+    if (*str == '+') {
+        str += 9;
+    }
+
+    // get auto reporting status
+    lwgsmi_parse_number(&str);
+
+    lwgsm.m.network.net_sys_mode = (lwgsm_network_system_mode_type_t)lwgsmi_parse_number(&str);
+
+    /* Send callback event */
+    lwgsmi_send_cb(LWGSM_EVT_NETWORK_NET_SYS_MODE_CURRENT);
+
+    return 1;
+}
+
+/**
+ * \brief           Parse received +CMNB message
+ * \param[in]       str: Input string to parse from
+ * \return          1 on success, 0 otherwise
+ */
+uint8_t
+lwgsmi_parse_cmnb(const char* str) {
+    if (*str == '+') {
+        str += 7;
+    }
+
+    lwgsm.m.network.net_mode_preference = (lwgsm_network_mode_preference_t)lwgsmi_parse_number(&str);
+
+    /* Send callback event */
+    lwgsmi_send_cb(LWGSM_EVT_NETWORK_NET_MODE_PREFERENCE_CURRENT);
+
+    return 1;
+}
+
+
+
 /**
  * \brief           Parse received +CSQ signal value
  * \param[in]       str: Input string
@@ -1105,5 +1149,9 @@ lwgsmi_parse_ipd(const char* str) {
 
     return 1;
 }
+
+
+
+
 
 #endif /* LWGSM_CFG_CONN */

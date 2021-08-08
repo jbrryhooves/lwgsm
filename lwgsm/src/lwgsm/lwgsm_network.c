@@ -153,7 +153,7 @@ lwgsm_network_rssi(int16_t* rssi,
     LWGSM_MSG_VAR_REF(msg).cmd_def = LWGSM_CMD_CSQ_GET;
     LWGSM_MSG_VAR_REF(msg).msg.csq.rssi = rssi;
 
-    return lwgsmi_send_msg_to_producer_mbox(&LWGSM_MSG_VAR_REF(msg), lwgsmi_initiate_cmd, 120000);
+    return lwgsmi_send_msg_to_producer_mbox(&LWGSM_MSG_VAR_REF(msg), lwgsmi_initiate_cmd, 2000);
 }
 
 /**
@@ -165,6 +165,75 @@ lwgsm_network_get_reg_status(void) {
     lwgsm_network_reg_status_t ret;
     lwgsm_core_lock();
     ret = lwgsm.m.network.status;
+    lwgsm_core_unlock();
+    return ret;
+}
+
+
+/**
+ * \brief           Get current system network mode
+ * \param[in]       evt_fn: Callback function called when command has finished. Set to `NULL` when not used
+ * \param[in]       evt_arg: Custom argument for event callback function
+ * \param[in]       blocking: Status whether command should be blocking or not
+ * \return          \ref lwgsmOK on success, member of \ref lwgsmr_t enumeration otherwise
+ */
+lwgsmr_t lwgsm_network_system_mode_get(const lwgsm_api_cmd_evt_fn evt_fn, void* const evt_arg, const uint32_t blocking){
+    LWGSM_MSG_VAR_DEFINE(msg);
+
+    LWGSM_MSG_VAR_ALLOC(msg, blocking);
+    LWGSM_MSG_VAR_SET_EVT(msg, evt_fn, evt_arg);
+    LWGSM_MSG_VAR_REF(msg).cmd_def = LWGSM_CMD_CNSMOD_GET;
+    // LWGSM_MSG_VAR_REF(msg).msg.cops_get.curr = curr;
+
+    return lwgsmi_send_msg_to_producer_mbox(&LWGSM_MSG_VAR_REF(msg), lwgsmi_initiate_cmd, 2000);    
+}
+
+
+/**
+ * \brief           Get current system network preference (CATM1 or NBIoT)
+ * \param[in]       evt_fn: Callback function called when command has finished. Set to `NULL` when not used
+ * \param[in]       evt_arg: Custom argument for event callback function
+ * \param[in]       blocking: Status whether command should be blocking or not
+ * \return          \ref lwgsmOK on success, member of \ref lwgsmr_t enumeration otherwise
+ */
+lwgsmr_t lwgsm_network_system_preference_get(const lwgsm_api_cmd_evt_fn evt_fn, void* const evt_arg, const uint32_t blocking){
+    LWGSM_MSG_VAR_DEFINE(msg);
+
+    LWGSM_MSG_VAR_ALLOC(msg, blocking);
+    LWGSM_MSG_VAR_SET_EVT(msg, evt_fn, evt_arg);
+    LWGSM_MSG_VAR_REF(msg).cmd_def = LWGSM_CMD_CMNB_GET;
+
+    return lwgsmi_send_msg_to_producer_mbox(&LWGSM_MSG_VAR_REF(msg), lwgsmi_initiate_cmd, 2000);    
+}
+
+/**
+ * \brief           Set current system network preference (CATM1 or NBIoT)
+ * \param[in]       mode: Preference mode. This parameter can be a value of \ref lwgsm_network_mode_preference_t enumeration
+ * \param[in]       evt_fn: Callback function called when command has finished. Set to `NULL` when not used
+ * \param[in]       evt_arg: Custom argument for event callback function
+ * \param[in]       blocking: Status whether command should be blocking or not
+ * \return          \ref lwgsmOK on success, member of \ref lwgsmr_t enumeration otherwise
+ */
+lwgsmr_t lwgsm_network_system_preference_set(const lwgsm_network_mode_preference_t mode, const lwgsm_api_cmd_evt_fn evt_fn, void* const evt_arg, const uint32_t blocking){
+    LWGSM_MSG_VAR_DEFINE(msg);
+
+    LWGSM_MSG_VAR_ALLOC(msg, blocking);
+    LWGSM_MSG_VAR_SET_EVT(msg, evt_fn, evt_arg);
+    LWGSM_MSG_VAR_REF(msg).cmd_def = LWGSM_CMD_CMNB_SET;
+    
+    LWGSM_MSG_VAR_REF(msg).msg.network_system_mode_preference.mode = mode;
+
+    return lwgsmi_send_msg_to_producer_mbox(&LWGSM_MSG_VAR_REF(msg), lwgsmi_initiate_cmd, 2000);    
+}
+
+/**
+ * \brief           Read network registration status
+ * \return          Member of \ref lwgsm_network_mode_preference_t enumeration
+ */
+lwgsm_network_mode_preference_t lwgsm_network_system_preference_read(void) {
+    lwgsm_network_mode_preference_t ret;
+    lwgsm_core_lock();
+    ret = lwgsm.m.network.net_mode_preference;
     lwgsm_core_unlock();
     return ret;
 }

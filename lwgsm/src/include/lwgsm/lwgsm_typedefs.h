@@ -288,6 +288,31 @@ typedef enum {
     LWGSM_NETWORK_REG_STATUS_CONNECTED_ROAMING_SMS_ONLY = 0x07  /*!< Device is roaming in SMS-only mode */
 } lwgsm_network_reg_status_t;
 
+
+/**
+ * \ingroup         LWGSM_NETWORK
+ * \brief           Network service types (AT+CNSMOD?)
+ */
+typedef enum {
+    LWGSM_NETWORK_SYSTEM_MODE_TYPE_NONE = 0,   /*!< No service */
+    LWGSM_NETWORK_SYSTEM_MODE_TYPE_GSM = 3,   
+    LWGSM_NETWORK_SYSTEM_MODE_TYPE_EGPRS = 5,   
+    LWGSM_NETWORK_SYSTEM_MODE_TYPE_LTEM1 = 7,   
+    LWGSM_NETWORK_SYSTEM_MODE_TYPE_LTENB = 9,   
+} lwgsm_network_system_mode_type_t;
+
+/**
+ * \ingroup         LWGSM_NETWORK
+ * \brief           Network types preference (AT+CMNB?)
+ */
+typedef enum {
+    LWGSM_NETWORK_MODE_PREFERENCE_TYPE_NOT_SET = 0,   /*!< */
+    LWGSM_NETWORK_MODE_PREFERENCE_TYPE_CATM1 = 1,   /*!< CAT M1 only */
+    LWGSM_NETWORK_MODE_PREFERENCE_TYPE_NBIOT = 2,   /*!< NB-IoT only */
+    LWGSM_NETWORK_MODE_PREFERENCE_TYPE_CATM1_NBIOT = 3 /*!< Both */
+} lwgsm_network_mode_preference_t;
+
+
 /**
  * \ingroup         LWGSM_CALL
  * \brief           List of call directions
@@ -415,6 +440,8 @@ typedef enum lwgsm_cb_type_t {
     LWGSM_EVT_NETWORK_OPERATOR_CURRENT,         /*!< Current operator event */
     LWGSM_EVT_NETWORK_REG_CHANGED,              /*!< Network registration changed.
                                                          Available even when \ref LWGSM_CFG_NETWORK is disabled */
+    LWGSM_EVT_NETWORK_NET_SYS_MODE_CURRENT,     /*!< Current Network System Mode event.*/
+    LWGSM_EVT_NETWORK_NET_MODE_PREFERENCE_CURRENT,     /*!< Current Network System Mode preference.*/
 #if LWGSM_CFG_NETWORK || __DOXYGEN__
     LWGSM_EVT_NETWORK_ATTACHED,                 /*!< Attached to network, PDP context active and ready for TCP/IP application */
     LWGSM_EVT_NETWORK_DETACHED,                 /*!< Detached from network, PDP context not active anymore */

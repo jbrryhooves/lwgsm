@@ -58,6 +58,12 @@ uint8_t     lwgsm_network_is_attached(void);
 lwgsmr_t      lwgsm_network_copy_ip(lwgsm_ip_t* ip);
 lwgsmr_t      lwgsm_network_check_status(const lwgsm_api_cmd_evt_fn evt_fn, void* const evt_arg, const uint32_t blocking);
 
+
+lwgsmr_t      lwgsm_network_system_mode_get(const lwgsm_api_cmd_evt_fn evt_fn, void* const evt_arg, const uint32_t blocking);
+lwgsmr_t      lwgsm_network_system_preference_get(const lwgsm_api_cmd_evt_fn evt_fn, void* const evt_arg, const uint32_t blocking);
+lwgsmr_t      lwgsm_network_system_preference_set(const lwgsm_network_mode_preference_t mode, const lwgsm_api_cmd_evt_fn evt_fn, void* const evt_arg, const uint32_t blocking);
+lwgsm_network_mode_preference_t lwgsm_network_system_preference_read(void);
+
 /**
  * \}
  */

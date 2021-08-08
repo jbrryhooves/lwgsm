@@ -268,6 +268,12 @@ typedef enum {
     LWGSM_CMD_SSL_OPT,
     LWGSM_CMD_SSL_SETROOT,
 
+    // SIM7080 commands
+    LWGSM_CMD_CNSMOD_GET,                   // Show the network system mode (GSM, CATM, NBIOT)
+    LWGSM_CMD_CMNB_GET,                     // Show the preferred selection between CATM and NBIoT
+    LWGSM_CMD_CMNB_SET,                     // Set the preferred selection between CATM and NBIoT
+
+
     LWGSM_CMD_END,                              /*!< Last CMD entry */
 } lwgsm_cmd_t;
 
@@ -531,6 +537,13 @@ typedef struct lwgsm_msg {
             const char* user;                   /*!< APN username */
             const char* pass;                   /*!< APN password */
         } network_attach;                       /*!< Settings for network attach */
+
+        struct {
+            lwgsm_network_mode_preference_t mode;          /*!< Network system mode */
+            
+        } network_system_mode_preference;                       /*!< Mode for system mode */
+
+
 #endif /* LWGSM_CFG_NETWORK || __DOXYGEN__ */
 #if LWGSM_CFG_FS || __DOXYGEN__
     lwgsm_fs_file_t fs_file;
@@ -670,6 +683,9 @@ typedef struct {
 
     uint8_t is_attached;                        /*!< Flag indicating device is attached and PDP context is active */
     lwgsm_ip_t ip_addr;                         /*!< Device IP address when network PDP context is enabled */
+
+    lwgsm_network_system_mode_type_t net_sys_mode;  // Network system mode (GSM, NB-IoT, CATM1)
+    lwgsm_network_mode_preference_t net_mode_preference;  // Network mode preference (GSM, NB-IoT, CATM1)
 } lwgsm_network_t;
 
 /**

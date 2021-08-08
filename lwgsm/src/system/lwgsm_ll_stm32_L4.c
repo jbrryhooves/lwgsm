@@ -139,7 +139,7 @@ configure_uart(uint32_t baudrate) {
         LL_GPIO_StructInit(&gpio_init);
         gpio_init.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
         gpio_init.Pull = LL_GPIO_PULL_UP;
-        gpio_init.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
+        gpio_init.Speed = LL_GPIO_SPEED_FREQ_HIGH;
         gpio_init.Mode = LL_GPIO_MODE_OUTPUT;
 
 #if defined(LWGSM_RESET_PIN)
