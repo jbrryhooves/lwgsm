@@ -194,7 +194,7 @@ lwgsm_reset_with_delay(uint32_t delay,
     LWGSM_MSG_VAR_REF(msg).cmd_def = LWGSM_CMD_RESET;
     LWGSM_MSG_VAR_REF(msg).msg.reset.delay = delay;
 
-    return lwgsmi_send_msg_to_producer_mbox(&LWGSM_MSG_VAR_REF(msg), lwgsmi_initiate_cmd, 60000);
+    return lwgsmi_send_msg_to_producer_mbox(&LWGSM_MSG_VAR_REF(msg), lwgsmi_initiate_cmd, 30000);
 }
 
 /**

@@ -171,6 +171,34 @@ configure_uart(uint32_t baudrate) {
         usart_init.Parity = PARITY;
         usart_init.StopBits = STOPBITS;
         usart_init.TransferDirection = DIRECTION_TX_RX;
+
+
+        // enable Stop mode operation
+        // disable the UART to make register modifications
+//        CLEAR_BIT(LPUART1->CR1, USART_CR1_UE);
+
+        // enable the UART during STOP mode
+        SET_BIT(LPUART1->CR1, USART_CR1_UESM);
+
+        // keep the LPUART clock propagating to the LPUART during STOP mode
+        SET_BIT(LPUART1->CR3, USART_CR3_UCESM);
+
+        // Set the WUS bits to set the wakeup interrupt to "Start bit detection"
+        //  MODIFY_REG(REG, CLEARMASK, SETMASK)
+        MODIFY_REG(LPUART1->CR3, USART_CR3_WUS_Msk, USART_CR3_WUS_1);
+
+        // Enable the Wakeup from Stop interrupt bit
+        SET_BIT(LPUART1->CR3, USART_CR3_WUFIE);
+
+        // clear interrupts
+        WRITE_REG(LPUART1->ICR, USART_ICR_IDLECF);
+
+        // re-enable the UART after making register modifications
+//        SET_BIT(LPUART1->CR1, USART_CR1_UE);
+
+
+
+
         LL_LPUART_Init(LWGSM_USART, &usart_init);
 
         /* Enable USART interrupts and DMA request */
@@ -234,6 +262,11 @@ configure_uart(uint32_t baudrate) {
 #else
         LL_DMA_EnableChannel(LWGSM_USART_DMA, LWGSM_USART_DMA_RX_CH);
 #endif /* defined(LWGSM_USART_DMA_RX_STREAM) */
+
+
+
+
+
         LL_LPUART_Enable(LWGSM_USART);
     } else {
         osDelay(10);
@@ -263,9 +296,21 @@ configure_uart(uint32_t baudrate) {
 static uint8_t
 reset_device(uint8_t state) {
     if (state) {                                /* Activate reset line */
-        LL_GPIO_ResetOutputPin(LWGSM_RESET_PORT, LWGSM_RESET_PIN);
-    } else {
+    
+#if defined(LWGSM_CFG_FLIP_PWRKEY_LOGIC) && LWGSM_CFG_FLIP_PWRKEY_LOGIC
+        // flip the logic to drive the dev board/hat
         LL_GPIO_SetOutputPin(LWGSM_RESET_PORT, LWGSM_RESET_PIN);
+#else
+        LL_GPIO_ResetOutputPin(LWGSM_RESET_PORT, LWGSM_RESET_PIN);
+
+#endif //LWGSM_RESET_PIN
+    } else {
+#if defined(LWGSM_CFG_FLIP_PWRKEY_LOGIC) && LWGSM_CFG_FLIP_PWRKEY_LOGIC
+        // flip the logic to drive the dev board/hat
+        LL_GPIO_ResetOutputPin(LWGSM_RESET_PORT, LWGSM_RESET_PIN);
+#else
+        LL_GPIO_SetOutputPin(LWGSM_RESET_PORT, LWGSM_RESET_PIN);
+#endif //LWGSM_RESET_PIN
     }
     return 1;
 }
@@ -352,6 +397,7 @@ LWGSM_USART_IRQHANDLER(void) {
     LL_LPUART_ClearFlag_FE(LWGSM_USART);
     LL_LPUART_ClearFlag_ORE(LWGSM_USART);
     LL_LPUART_ClearFlag_NE(LWGSM_USART);
+    LL_LPUART_ClearFlag_WKUP(LWGSM_USART);
 
     if (usart_ll_mbox_id != NULL) {
         void* d = (void*)1;

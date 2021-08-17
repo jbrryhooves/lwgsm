@@ -1759,9 +1759,10 @@ lwgsmi_initiate_cmd(lwgsm_msg_t* msg) {
         case LWGSM_CMD_RESET: {                 /* Reset modem with AT commands */
             /* Try with hardware reset */
             if (lwgsm.ll.reset_fn != NULL && lwgsm.ll.reset_fn(1)) {
-                lwgsm_delay(1000);
+                lwgsm_delay(100);
+                // osDelay(1);
                 lwgsm.ll.reset_fn(0);
-                lwgsm_delay(1500);
+                lwgsm_delay(3500); // 7080G needs >= 2.5s from falling edge of PWRKEY for UART to be ready
             }
 
             /* Send manual AT command */

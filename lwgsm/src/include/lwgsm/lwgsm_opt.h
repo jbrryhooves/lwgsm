@@ -193,7 +193,7 @@
  * \brief           Default delay (milliseconds unit) before sending first AT command on reset sequence
  */
 #ifndef LWGSM_CFG_RESET_DELAY_DEFAULT
-#define LWGSM_CFG_RESET_DELAY_DEFAULT         1000
+#define LWGSM_CFG_RESET_DELAY_DEFAULT         2500
 #endif
 
 /**
