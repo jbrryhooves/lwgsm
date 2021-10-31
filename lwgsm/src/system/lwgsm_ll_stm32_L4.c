@@ -48,6 +48,7 @@
 #include "lwgsm/lwgsm_input.h"
 #include "system/lwgsm_ll.h"
 
+
 #if !__DOXYGEN__
 
 #if !LWGSM_CFG_INPUT_USE_PROCESS

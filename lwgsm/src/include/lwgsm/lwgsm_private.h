@@ -272,6 +272,9 @@ typedef enum {
     LWGSM_CMD_CNSMOD_GET,                   // Show the network system mode (GSM, CATM, NBIOT)
     LWGSM_CMD_CMNB_GET,                     // Show the preferred selection between CATM and NBIoT
     LWGSM_CMD_CMNB_SET,                     // Set the preferred selection between CATM and NBIoT
+    LWGSM_CMD_CNACT_SET,                    // Set the activation status of the APP Network
+    LWGSM_CMD_CNACT_GET,                    // Get the activation status of the APP Network
+
 
 
     LWGSM_CMD_END,                              /*!< Last CMD entry */
@@ -580,6 +583,11 @@ typedef struct lwgsm_msg {
                 uint8_t param;
                 uint8_t value;
             } sapbr;
+            struct {
+                uint8_t index;
+                uint8_t activationStatus;
+            } cnact;
+
             ip_app_t* status;
         } ip_app;
 #endif /* LWGSM_CFG_IP_APP || __DOXYGEN__ */

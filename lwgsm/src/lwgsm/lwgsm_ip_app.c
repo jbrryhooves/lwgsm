@@ -61,4 +61,89 @@ lwgsm_ip_app_sapbr(uint8_t param, uint8_t value, void* status, const lwgsm_api_c
     return lwgsmi_send_msg_to_producer_mbox(&LWGSM_MSG_VAR_REF(msg), lwgsmi_initiate_cmd, 85000);
 }
 
+
+/**
+ * \brief           Set IP APP Activation status 
+ * \param[in]       index: Index of PDP contect ID
+ * \param[in]       activationStatus: Action to take on the PDP contect (0-2)
+ * \param[in]       evt_fn: Callback function called when command has finished. Set to `NULL` when not used
+ * \param[in]       evt_arg: Custom argument for event callback function
+ * \param[in]       blocking: Status whether command should be blocking or not
+ * \return          \ref lwgsmOK on success, member of \ref lwgsmr_t otherwise
+ */
+lwgsmr_t
+lwgsm_ip_app_cnact_set(const uint8_t index, const uint8_t activationStatus, const lwgsm_api_cmd_evt_fn evt_fn, void* const evt_arg, const uint32_t blocking) {
+    LWGSM_MSG_VAR_DEFINE(msg);
+
+    LWGSM_MSG_VAR_ALLOC(msg, blocking);
+    LWGSM_MSG_VAR_SET_EVT(msg, evt_fn, evt_arg);
+    LWGSM_MSG_VAR_REF(msg).cmd_def = LWGSM_CMD_CNACT_SET;
+    LWGSM_MSG_VAR_REF(msg).msg.ip_app.cnact.index = index;
+    LWGSM_MSG_VAR_REF(msg).msg.ip_app.cnact.activationStatus = activationStatus;
+
+    return lwgsmi_send_msg_to_producer_mbox(&LWGSM_MSG_VAR_REF(msg), lwgsmi_initiate_cmd, 2000);
+}
+
+/**
+ * \brief           Get IP APP Activation status 
+ * \param[in]       evt_fn: Callback function called when command has finished. Set to `NULL` when not used
+ * \param[in]       evt_arg: Custom argument for event callback function
+ * \param[in]       blocking: Status whether command should be blocking or not
+ * \return          \ref lwgsmOK on success, member of \ref lwgsmr_t otherwise
+ */
+lwgsmr_t
+lwgsm_ip_app_cnact_get(const lwgsm_api_cmd_evt_fn evt_fn, void* const evt_arg, const uint32_t blocking) {
+    LWGSM_MSG_VAR_DEFINE(msg);
+
+    LWGSM_MSG_VAR_ALLOC(msg, blocking);
+    LWGSM_MSG_VAR_SET_EVT(msg, evt_fn, evt_arg);
+    LWGSM_MSG_VAR_REF(msg).cmd_def = LWGSM_CMD_CNACT_GET;
+
+    return lwgsmi_send_msg_to_producer_mbox(&LWGSM_MSG_VAR_REF(msg), lwgsmi_initiate_cmd, 2000);
+}
+
+
+
+
+
+/**
+ * \brief           Get current system network preference (CATM1 or NBIoT)
+ * \param[in]       evt_fn: Callback function called when command has finished. Set to `NULL` when not used
+ * \param[in]       evt_arg: Custom argument for event callback function
+ * \param[in]       blocking: Status whether command should be blocking or not
+ * \return          \ref lwgsmOK on success, member of \ref lwgsmr_t enumeration otherwise
+ */
+lwgsmr_t lwgsm_network_system_preference_get(const lwgsm_api_cmd_evt_fn evt_fn, void *const evt_arg, const uint32_t blocking)
+{
+    LWGSM_MSG_VAR_DEFINE(msg);
+
+    LWGSM_MSG_VAR_ALLOC(msg, blocking);
+    LWGSM_MSG_VAR_SET_EVT(msg, evt_fn, evt_arg);
+    LWGSM_MSG_VAR_REF(msg).cmd_def = LWGSM_CMD_CMNB_GET;
+
+    return lwgsmi_send_msg_to_producer_mbox(&LWGSM_MSG_VAR_REF(msg), lwgsmi_initiate_cmd, 2000);
+}
+
+/**
+ * \brief           Set current system network preference (CATM1 or NBIoT)
+ * \param[in]       mode: Preference mode. This parameter can be a value of \ref lwgsm_network_mode_preference_t enumeration
+ * \param[in]       evt_fn: Callback function called when command has finished. Set to `NULL` when not used
+ * \param[in]       evt_arg: Custom argument for event callback function
+ * \param[in]       blocking: Status whether command should be blocking or not
+ * \return          \ref lwgsmOK on success, member of \ref lwgsmr_t enumeration otherwise
+ */
+lwgsmr_t lwgsm_network_system_preference_set(const lwgsm_network_mode_preference_t mode, const lwgsm_api_cmd_evt_fn evt_fn, void *const evt_arg, const uint32_t blocking)
+{
+    LWGSM_MSG_VAR_DEFINE(msg);
+
+    LWGSM_MSG_VAR_ALLOC(msg, blocking);
+    LWGSM_MSG_VAR_SET_EVT(msg, evt_fn, evt_arg);
+    LWGSM_MSG_VAR_REF(msg).cmd_def = LWGSM_CMD_CMNB_SET;
+
+    LWGSM_MSG_VAR_REF(msg).msg.network_system_mode_preference.mode = mode;
+
+    return lwgsmi_send_msg_to_producer_mbox(&LWGSM_MSG_VAR_REF(msg), lwgsmi_initiate_cmd, 2000);
+}
+
+
 #endif /* LWGSM_CFG_IP_APP || __DOXYGEN__ */
