@@ -711,6 +711,7 @@ lwgsmi_parse_smstate(const char* str) {
 
 #if LWGSM_CFG_IP_APP || __DOXYGEN__
 
+
 /**
  * \brief           Parse received +SAPBR with connection information
  * \param[in]       str: Input string
@@ -739,10 +740,60 @@ lwgsmi_parse_sapbr(const char* str) {
     cid = lwgsmi_parse_number(&str);
   }
 
-  if (CMD_IS_DEF(LWGSM_CMD_IP_APP_SAPBR) &&
-      lwgsm.msg->msg.ip_app.status != NULL) { /* Check and copy to user variable */
+  if (CMD_IS_DEF(LWGSM_CMD_IP_APP_SAPBR) && lwgsm.msg->msg.ip_app.status != NULL) { /* Check and copy to user variable */
     LWGSM_MEMCPY(lwgsm.msg->msg.ip_app.status, &lwgsm.m.ip_app[cid], sizeof(*lwgsm.msg->msg.ip_app.status));
   }
+  return 1;
+}
+
+/**
+ * \brief           Parse received +CNACT with connection information
+ * \param[in]       str: Input string
+ * \return          1 on success, 0 otherwise
+ */
+uint8_t
+lwgsmi_parse_cnact(const char* str) {
+  if (*str == '+') {
+    str += 7;
+  }
+
+  uint8_t cid;
+  uint8_t ipChanged = 0;
+  lwgsm_ip_t ip;
+
+  if (CMD_GET_CUR() == LWGSM_CMD_CNACT_GET) {
+    str++;
+    cid = lwgsmi_parse_number(&str);
+    lwgsm.m.ip_app[cid].cid = cid;
+    lwgsm.m.ip_app[cid].status = lwgsmi_parse_number(&str);
+
+
+    // check if the received IP address is different to the saved on
+    lwgsmi_parse_ip(&str, &ip);
+    if(lwgsm.m.ip_app[cid].ip.ip[0] != ip.ip[0] || lwgsm.m.ip_app[cid].ip.ip[1] != ip.ip[1] || lwgsm.m.ip_app[cid].ip.ip[2] != ip.ip[2] || lwgsm.m.ip_app[cid].ip.ip[3] != ip.ip[3])
+    {
+        ipChanged = 1;
+    }
+    LWGSM_MEMCPY(&lwgsm.m.ip_app[cid].ip.ip, &ip, sizeof(ip));
+
+//        LWGSM_MEMCPY(&lwgsm.m.network.ip_addr, &lwgsm.msg->msg.ip_app.status->ip, sizeof(ip));
+//        LWGSM_MEMCPY(&lwgsm.m.network.status, &lwgsm.msg->msg.ip_app.status, sizeof(*lwgsm.msg->msg.ip_app.status));
+
+
+    if (CMD_IS_DEF(LWGSM_CMD_CNACT_GET) && lwgsm.msg->msg.ip_app.status != NULL) { /* Check and copy to user variable */
+        LWGSM_MEMCPY(lwgsm.msg->msg.ip_app.status, &lwgsm.m.ip_app[cid], sizeof(*lwgsm.msg->msg.ip_app.status));
+    }
+
+    if(ipChanged == 1)
+    {
+        LWGSM_MEMCPY(&lwgsm.evt.evt.ip_app, &lwgsm.m.ip_app[cid], sizeof(ip_app_t));
+        lwgsmi_send_cb(LWGSM_EVT_IP_APP_CHANGED);
+    }
+
+
+  } 
+  
+
   return 1;
 }
 

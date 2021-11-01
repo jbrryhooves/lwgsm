@@ -132,6 +132,20 @@ uint8_t lwgsm_network_is_attached(void)
     return res;
 }
 
+
+/**
+ * \brief           Check if device is attached to network and the IP APP is activated (+CNACT)
+ * \return          `1` on success, `0` otherwise
+ */
+uint8_t lwgsm_network_is_ip_app_activated(void)
+{
+    uint8_t res;
+    lwgsm_core_lock();
+    res = LWGSM_U8(lwgsm.m.network.is_attached);
+    lwgsm_core_unlock();
+    return res;
+}
+
 #endif /* LWGSM_CFG_NETWORK || __DOXYGEN__ */
 
 /**

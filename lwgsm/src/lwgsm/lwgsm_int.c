@@ -784,6 +784,8 @@ lwgsmi_parse_received(lwgsm_recv_t* rcv) {
 #if LWGSM_CFG_IP_APP
         } else if (!strncmp(rcv->data, "+SAPBR", 6)) {
             lwgsmi_parse_sapbr(rcv->data);    /* Parse +SAPBR response with IP Application connection details */
+        } else if (!strncmp(rcv->data, "+CNACT", 6)) {
+            lwgsmi_parse_cnact(rcv->data);    /* Parse +CNACT response with IP Application connection details */
 #endif /* LWGSM_CFG_IP_APP */
 #if LWGSM_CFG_CLOCK
         } else if (!strncmp(rcv->data, "+CCLK", 5)) {
@@ -2424,6 +2426,20 @@ lwgsmi_initiate_cmd(lwgsm_msg_t* msg) {
             AT_PORT_SEND_CONST_STR("+SAPBR=");
             lwgsmi_send_number(msg->msg.ip_app.sapbr.param, 0, 0);
             lwgsmi_send_number(msg->msg.ip_app.sapbr.value, 0, 1);
+            AT_PORT_SEND_END_AT();
+            break;
+        }
+        case LWGSM_CMD_CNACT_SET: {                   /* Activate the given PDP connection */
+            AT_PORT_SEND_BEGIN_AT();
+            AT_PORT_SEND_CONST_STR("+CNACT=");
+            lwgsmi_send_number(msg->msg.ip_app.cnact.pdpIndex, 0, 0);
+            lwgsmi_send_number(msg->msg.ip_app.cnact.activationStatus, 0, 1);
+            AT_PORT_SEND_END_AT();
+            break;
+        }
+        case LWGSM_CMD_CNACT_GET: {                   /* Query the current PDP connection status*/
+            AT_PORT_SEND_BEGIN_AT();
+            AT_PORT_SEND_CONST_STR("+CNACT?");
             AT_PORT_SEND_END_AT();
             break;
         }

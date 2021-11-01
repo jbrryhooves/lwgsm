@@ -584,7 +584,7 @@ typedef struct lwgsm_msg {
                 uint8_t value;
             } sapbr;
             struct {
-                uint8_t index;
+                uint8_t pdpIndex;
                 uint8_t activationStatus;
             } cnact;
 
@@ -734,7 +734,7 @@ typedef struct {
     uint8_t               mqtt_state;
 #endif /* LWGSM_CFG_MQTT || __DOXYGEN__ */
 #if LWGSM_CFG_IP_APP || __DOXYGEN__
-    ip_app_t              ip_app[3];
+    ip_app_t              ip_app[4];
 #endif /* LWGSM_CFG_IP_APP || __DOXYGEN__ */
 } lwgsm_modules_t;
 
