@@ -75,6 +75,7 @@ uint8_t     lwgsmi_parse_ipd(const char* str);
 
 uint8_t     lwgsmi_parse_smpublish(const char* str, size_t len);
 uint8_t     lwgsmi_parse_smstate(const char* str);
+uint8_t     lwgsmi_parse_smsub(const char* str);
 
 uint8_t     lwgsmi_parse_sapbr(const char* str);
 uint8_t     lwgsmi_parse_cnact(const char* str);

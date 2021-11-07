@@ -37,5 +37,7 @@
 #define LWGSM_HDR_IP_APP_H
 
 lwgsmr_t      lwgsm_ip_app_sapbr(uint8_t param, uint8_t value, void* status, lwgsm_api_cmd_evt_fn evt_fn, void* evt_arg, uint32_t blocking);
+lwgsmr_t      lwgsm_ip_app_ping(char* host, uint8_t pingCount, uint8_t pingSize, uint16_t timeout, ping_response_t* pingResp,
+                    const lwgsm_api_cmd_evt_fn evt_fn, void* const evt_arg, const uint32_t blocking);
 
 #endif /* LWGSM_HDR_IP_APP_H */

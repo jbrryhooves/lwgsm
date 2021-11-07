@@ -48,6 +48,9 @@
 #include "lwgsm/lwgsm_device_info.h"
 #include "system/lwgsm_sys.h"
 
+#include <stdbool.h>
+
+
 #if LWGSM_CFG_SMS || __DOXYGEN__
 #include "lwgsm/lwgsm_sms.h"
 #endif /* LWGSM_CFG_SMS || __DOXYGEN__ */

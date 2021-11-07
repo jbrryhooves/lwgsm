@@ -779,13 +779,17 @@ lwgsmi_parse_received(lwgsm_recv_t* rcv) {
         } else if (!strncmp(rcv->data, "+SMPUBLISH", 10)) {
             lwgsmi_parse_smpublish(rcv->data, rcv->len);    /* Parse +SMPUBLISH response with MQTT Message */
         } else if (!strncmp(rcv->data, "+SMSTATE", 8)) {
-            lwgsmi_parse_smstate(rcv->data);    /* Parse +SMSTATE response with MQTT Connection status */
+            lwgsmi_parse_smstate(rcv->data);                /* Parse +SMSTATE response with MQTT Connection status */
+        } else if (!strncmp(rcv->data, "+SMSUB", 6)) {
+            lwgsmi_parse_smsub(rcv->data);                  /* Parse +SMSUB message. New message received from the sever*/
 #endif /* LWGSM_CFG_MQTT */
 #if LWGSM_CFG_IP_APP
         } else if (!strncmp(rcv->data, "+SAPBR", 6)) {
             lwgsmi_parse_sapbr(rcv->data);    /* Parse +SAPBR response with IP Application connection details */
         } else if (!strncmp(rcv->data, "+CNACT", 6)) {
             lwgsmi_parse_cnact(rcv->data);    /* Parse +CNACT response with IP Application connection details */
+        } else if (!strncmp(rcv->data, "+SNPING4", 8)) {
+            lwgsmi_parse_snping4(rcv->data);    /* Parse +SNPING4 response */
 #endif /* LWGSM_CFG_IP_APP */
 #if LWGSM_CFG_CLOCK
         } else if (!strncmp(rcv->data, "+CCLK", 5)) {
@@ -2342,12 +2346,14 @@ lwgsmi_initiate_cmd(lwgsm_msg_t* msg) {
             break;
         }
 #endif /* LWGSM_CFG_FS */
+
+
 #if LWGSM_CFG_MQTT
         case LWGSM_CMD_MQTT_CONF: {                   /* Configuration of MQTT Client */
             AT_PORT_SEND_BEGIN_AT();
             AT_PORT_SEND_CONST_STR("+SMCONF=");
-            lwgsmi_send_string(msg->msg.mqtt.conf.param, 1, 1, 0);
-            lwgsmi_send_string(msg->msg.mqtt.conf.value, 1, 1, 1);
+            lwgsmi_send_string(msg->msg.mqtt.conf.param, 0, 1, 0);
+            lwgsmi_send_string(msg->msg.mqtt.conf.value, 0, 1, 1);
             AT_PORT_SEND_END_AT();
             break;
         }
@@ -2389,9 +2395,14 @@ lwgsmi_initiate_cmd(lwgsm_msg_t* msg) {
             AT_PORT_SEND_BEGIN_AT();
             AT_PORT_SEND_CONST_STR("+SMPUB=");
             lwgsmi_send_string(msg->msg.mqtt.topic.topic, 1, 1, 0);
+            lwgsmi_send_number(strlen(msg->msg.mqtt.message), 0, 1);
             lwgsmi_send_number(msg->msg.mqtt.topic.qos, 0, 1);
             lwgsmi_send_number(msg->msg.mqtt.topic.retain, 0, 1);
-            lwgsmi_send_string(msg->msg.mqtt.message, 1, 1, 1);
+            AT_PORT_SEND_CHR("\r");
+            // TODO: figure out a better way of doing
+            osDelay(200);   // wait for the '>' character to be returned from the module.
+
+            lwgsmi_send_string(msg->msg.mqtt.message, 0, 0, 0);
             AT_PORT_SEND_END_AT();
             break;
         }
@@ -2443,6 +2454,23 @@ lwgsmi_initiate_cmd(lwgsm_msg_t* msg) {
             AT_PORT_SEND_END_AT();
             break;
         }
+        case LWGSM_CMD_PING: {                        /* Send a ping request*/
+            AT_PORT_SEND_BEGIN_AT();
+            AT_PORT_SEND_CONST_STR("+SNPING4=");
+
+            if(msg->msg.ip_app.ping_request.isIPAddress > 0){
+                lwgsmi_send_ip_mac(&msg->msg.ip_app.ping_request.ip, 1, 1, 0);
+            }
+            else{
+                lwgsmi_send_string(msg->msg.ip_app.ping_request.host, 0, 1, 0);
+            }
+            lwgsmi_send_number(msg->msg.ip_app.ping_request.pingCount, 0, 1);
+            lwgsmi_send_number(msg->msg.ip_app.ping_request.pingSize, 0, 1);
+            lwgsmi_send_number(msg->msg.ip_app.ping_request.timeout, 0, 1);
+            AT_PORT_SEND_END_AT();
+            break;
+        }
+
 #endif /* LWGSM_CFG_IP_APP */
 #if LWGSM_CFG_CLOCK
         case LWGSM_CMD_CCLK: {                   /* Request current time */

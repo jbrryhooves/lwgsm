@@ -37,4 +37,6 @@
 
 #if LWGSM_CFG_HTTP || __DOXYGEN__
 
+
+
 #endif /* LWGSM_CFG_HTTP || __DOXYGEN__ */

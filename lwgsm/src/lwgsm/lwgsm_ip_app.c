@@ -102,6 +102,36 @@ lwgsm_ip_app_cnact_get(const lwgsm_api_cmd_evt_fn evt_fn, void* const evt_arg, c
     return lwgsmi_send_msg_to_producer_mbox(&LWGSM_MSG_VAR_REF(msg), lwgsmi_initiate_cmd, 2000);
 }
 
+/**
+ * \brief           Send a PING request
+ * \param[in]       host: Host to ping. IP address or url. Eg. "8.8.8.8" or "google.com"
+ * \param[in]       pingCount: number of pings to send
+ * \param[in]       pingSize: number of bytes per ping
+ * \param[in]       timeout: timeout for each ping in ms
+ * \param[out]      pingResp: most recent ping reponse if set to blocking. Set to NULL if not used. 
+ * \param[in]       evt_fn: Callback function called when command has finished. Set to `NULL` when not used
+ * \param[in]       evt_arg: Custom argument for event callback function
+ * \param[in]       blocking: Status whether command should be blocking or not
+ * \return          \ref lwgsmOK on success, member of \ref lwgsmr_t otherwise
+ */
+lwgsmr_t
+lwgsm_ip_app_ping(char* host, uint8_t pingCount, uint8_t pingSize, uint16_t timeout, ping_response_t* pingResp,
+                    const lwgsm_api_cmd_evt_fn evt_fn, void* const evt_arg, const uint32_t blocking) {
+    LWGSM_MSG_VAR_DEFINE(msg);
+
+    LWGSM_MSG_VAR_ALLOC(msg, blocking);
+    LWGSM_MSG_VAR_SET_EVT(msg, evt_fn, evt_arg);
+    LWGSM_MSG_VAR_REF(msg).cmd_def = LWGSM_CMD_PING;
+    LWGSM_MSG_VAR_REF(msg).msg.ip_app.ping_request.host = host;
+    LWGSM_MSG_VAR_REF(msg).msg.ip_app.ping_request.isIPAddress = 0; 
+    LWGSM_MSG_VAR_REF(msg).msg.ip_app.ping_request.pingCount = pingCount;
+    LWGSM_MSG_VAR_REF(msg).msg.ip_app.ping_request.pingSize = pingSize;
+    LWGSM_MSG_VAR_REF(msg).msg.ip_app.ping_request.timeout = timeout;
+    LWGSM_MSG_VAR_REF(msg).msg.ip_app.ping_response = pingResp;
+
+    return lwgsmi_send_msg_to_producer_mbox(&LWGSM_MSG_VAR_REF(msg), lwgsmi_initiate_cmd, 60000);
+}
+
 
 
 

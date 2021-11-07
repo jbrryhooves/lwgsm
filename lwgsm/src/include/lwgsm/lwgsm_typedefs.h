@@ -373,6 +373,8 @@ typedef struct {
     uint8_t input_time;                         /*!< Input time */
 } lwgsm_fs_file_t;
 
+
+
 typedef struct {
     uint16_t id;                                /*!< ID of message */
     char topic[256];                            /*!< Topic name */
@@ -388,6 +390,11 @@ typedef struct {
     uint8_t status;                             /*!< Status of connection */
     lwgsm_ip_t ip;                              /*!< IP of connection */
 } ip_app_t;
+
+typedef struct {
+    uint16_t response_time_ms;                  /*!< Response time of ping request, milliseconds */
+    lwgsm_ip_t ip;                              /*!< IP of connection */
+} ping_response_t;
 
 /* Forward declarations */
 struct lwgsm_evt;
@@ -484,6 +491,7 @@ typedef enum lwgsm_cb_type_t {
 #endif /* LWGSM_CFG_MQTT || __DOXYGEN__ */
 #if LWGSM_CFG_IP_APP || __DOXYGEN__
     LWGSM_EVT_IP_APP_CHANGED,                   /*!< IP Application connection changed */
+    LWGSM_EVT_PING_RESPONSE,                    /*!< PING response received  */
 #endif /* LWGSM_CFG_IP_APP || __DOXYGEN__ */
 } lwgsm_evt_type_t;
 
@@ -599,6 +607,15 @@ typedef struct lwgsm_evt {
             lwgsmr_t res;                       /*!< Operation success */
         } pb_search;                            /*!< Phonebok search list. Use with \ref LWGSM_EVT_PB_SEARCH event */
 #endif /* LWGSM_CFG_PHONEBOOK || __DOXYGEN__ */
+#if LWGSM_CFG_HTTP || __DOXYGEN__
+        struct {
+            uint16_t http_result_code;
+            uint16_t body_length;
+            lwgsmr_t res;                       /*!< Result of command */
+        } request_received;                     /*!< MQTT received. Use with \ref LWGSM_EVT_MQTT_RECEIVED event */
+        struct {
+        } response_read;                           /*!< MQTT State changed. Use with \ref LWGSM_EVT_MQTT_STATE event */
+#endif /* LWGSM_CFG_HTTP || __DOXYGEN__ */
 #if LWGSM_CFG_MQTT || __DOXYGEN__
         struct {
             lwgsm_mqtt_message_t* message;      /*!< MQTT Message entry */

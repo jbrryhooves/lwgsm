@@ -181,7 +181,7 @@ lwgsm_mqtt_publish(char *topic, char *message, uint8_t qos, uint8_t retain, cons
     LWGSM_MSG_VAR_REF(msg).msg.mqtt.topic.retain = retain;
     LWGSM_MSG_VAR_REF(msg).msg.mqtt.message = message;
 
-    return lwgsmi_send_msg_to_producer_mbox(&LWGSM_MSG_VAR_REF(msg), lwgsmi_initiate_cmd, 60000);
+    return lwgsmi_send_msg_to_producer_mbox(&LWGSM_MSG_VAR_REF(msg), lwgsmi_initiate_cmd, 10000);
 }
 
 /**

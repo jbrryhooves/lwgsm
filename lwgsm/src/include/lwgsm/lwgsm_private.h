@@ -263,6 +263,14 @@ typedef enum {
     LWGSM_CMD_MQTT_PUBLISH,
     LWGSM_CMD_MQTT_STATE,
 
+    LWGSM_CMD_HTTP_CONF,
+    LWGSM_CMD_HTTP_CONN,
+    LWGSM_CMD_HTTP_SET_BODY,
+    LWGSM_CMD_HTTP_ADD_HEADER,
+    LWGSM_CMD_HTTP_CLEAR_HEADER,
+    LWGSM_CMD_HTTP_GET_STATUS,
+    
+    
     LWGSM_CMD_IP_APP_SAPBR,
 
     LWGSM_CMD_SSL_OPT,
@@ -275,6 +283,7 @@ typedef enum {
     LWGSM_CMD_CNACT_SET,                    // Set the activation status of the APP Network
     LWGSM_CMD_CNACT_GET,                    // Get the activation status of the APP Network
 
+    LWGSM_CMD_PING,                         // Send a ping request
 
 
     LWGSM_CMD_END,                              /*!< Last CMD entry */
@@ -551,6 +560,7 @@ typedef struct lwgsm_msg {
 #if LWGSM_CFG_FS || __DOXYGEN__
     lwgsm_fs_file_t fs_file;
 #endif /* LWGSM_CFG_FS || __DOXYGEN__ */
+
 #if LWGSM_CFG_MQTT || __DOXYGEN__
         struct {
             struct {
@@ -587,7 +597,15 @@ typedef struct lwgsm_msg {
                 uint8_t pdpIndex;
                 uint8_t activationStatus;
             } cnact;
-
+            struct {
+                lwgsm_ip_t ip;
+                char* host;
+                uint8_t isIPAddress;
+                uint8_t pingCount;
+                uint8_t pingSize;
+                uint16_t timeout;
+            } ping_request;
+            ping_response_t* ping_response;
             ip_app_t* status;
         } ip_app;
 #endif /* LWGSM_CFG_IP_APP || __DOXYGEN__ */
@@ -735,6 +753,7 @@ typedef struct {
 #endif /* LWGSM_CFG_MQTT || __DOXYGEN__ */
 #if LWGSM_CFG_IP_APP || __DOXYGEN__
     ip_app_t              ip_app[4];
+    ping_response_t       ping_response;
 #endif /* LWGSM_CFG_IP_APP || __DOXYGEN__ */
 } lwgsm_modules_t;
 

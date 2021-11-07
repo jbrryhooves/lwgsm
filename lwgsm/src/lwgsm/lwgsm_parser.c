@@ -707,6 +707,28 @@ lwgsmi_parse_smstate(const char* str) {
     return 1;
 }
 
+/**
+ * \brief           Parse received +SMSUB with newly received message
+ * \param[in]       str: Input string
+ * \param[in]       send_evt: Send event about new MQTT message
+ * \return          1 on success, 0 otherwise
+ */
+uint8_t
+lwgsmi_parse_smsub(const char* str) {
+    if (*str == '+') {
+        str += 8;
+    }
+    uint8_t parseSuccess = 0;
+    parseSuccess = lwgsmi_parse_string(&str, lwgsm.m.mqtt_message.topic, 256, 0);
+    parseSuccess = lwgsmi_parse_string(&str, lwgsm.m.mqtt_message.message, 1024, 0);
+
+    // copy the newly received message into the event
+    lwgsm.evt.evt.mqtt_received.message = &lwgsm.m.mqtt_message;
+    lwgsmi_send_cb(LWGSM_EVT_MQTT_RECEIVED);
+
+    return 1;
+}
+
 #endif /* LWGSM_CFG_MQTT || __DOXYGEN__ */
 
 #if LWGSM_CFG_IP_APP || __DOXYGEN__
@@ -790,6 +812,39 @@ lwgsmi_parse_cnact(const char* str) {
         lwgsmi_send_cb(LWGSM_EVT_IP_APP_CHANGED);
     }
 
+
+  } 
+  
+
+  return 1;
+}
+/**
+ * \brief           Parse received +SNPING4 
+ * \param[in]       str: Input string
+ * \return          1 on success, 0 otherwise
+ */
+uint8_t
+lwgsmi_parse_snping4(const char* str) {
+  if (*str == '+') {
+    str += 9;
+  }
+
+  uint8_t pingResponseNumber;
+  lwgsm_ip_t ip;
+  uint16_t responseTime = 0;
+
+  if (CMD_GET_CUR() == LWGSM_CMD_PING) {
+    str++;
+    pingResponseNumber = lwgsmi_parse_number(&str);
+    lwgsmi_parse_ip(&str, &lwgsm.m.ping_response.ip);
+    lwgsm.m.ping_response.response_time_ms = lwgsmi_parse_number(&str);
+
+    if (CMD_IS_DEF(LWGSM_CMD_PING) && lwgsm.msg->msg.ip_app.ping_response != NULL) { /* Check and copy to user variable */
+        LWGSM_MEMCPY(lwgsm.msg->msg.ip_app.ping_response, &lwgsm.m.ping_response, sizeof(lwgsm.m.ping_response));
+    }
+
+
+    lwgsmi_send_cb(LWGSM_EVT_PING_RESPONSE);
 
   } 
   

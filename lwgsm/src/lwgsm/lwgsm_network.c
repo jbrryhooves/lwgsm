@@ -139,9 +139,17 @@ uint8_t lwgsm_network_is_attached(void)
  */
 uint8_t lwgsm_network_is_ip_app_activated(void)
 {
-    uint8_t res;
+    uint8_t res = 0;
+    uint8_t status;
     lwgsm_core_lock();
-    res = LWGSM_U8(lwgsm.m.network.is_attached);
+    for(uint8_t i = 0; i < (sizeof (lwgsm.m.ip_app)/ sizeof (ip_app_t)); i++ )
+    {
+        if(lwgsm.m.ip_app[i].status > 0)
+        {
+            return 1;
+        }
+    }
+
     lwgsm_core_unlock();
     return res;
 }
