@@ -207,6 +207,29 @@ lwgsmr_t lwgsm_network_check_reg_status(const lwgsm_api_cmd_evt_fn evt_fn, void 
 
     return lwgsmi_send_msg_to_producer_mbox(&LWGSM_MSG_VAR_REF(msg), lwgsmi_initiate_cmd, 2000);
 }
+
+/**
+ * \brief           Set network registration status unsolicited reporting (AT+CREG=)
+ * \param[in]       mode: 0= Disable reporting, 1=Enable unsolicited report (+CREG: <stat>), 2= enable unsolicited report with extra location info
+ * \param[in]       evt_fn: Callback function called when command has finished. Set to `NULL` when not used
+ * \param[in]       evt_arg: Custom argument for event callback function
+ * \param[in]       blocking: Status whether command should be blocking or not
+ * \return          \ref lwgsmOK on success, member of \ref lwgsmr_t enumeration otherwise
+ */
+lwgsmr_t lwgsm_network_set_reg_status(const lwgsm_network_registration_unsolicited_report_t mode, const lwgsm_api_cmd_evt_fn evt_fn, void *const evt_arg, const uint32_t blocking)
+{
+    LWGSM_MSG_VAR_DEFINE(msg);
+
+    LWGSM_MSG_VAR_ALLOC(msg, blocking);
+    LWGSM_MSG_VAR_SET_EVT(msg, evt_fn, evt_arg);
+    LWGSM_MSG_VAR_REF(msg).cmd_def = LWGSM_CMD_CREG_GET;
+    LWGSM_MSG_VAR_REF(msg).msg.network_registration_reporting.mode = mode;
+
+    return lwgsmi_send_msg_to_producer_mbox(&LWGSM_MSG_VAR_REF(msg), lwgsmi_initiate_cmd, 2000);
+}
+
+
+
 /**
  * \brief           Get current system network mode
  * \param[in]       evt_fn: Callback function called when command has finished. Set to `NULL` when not used

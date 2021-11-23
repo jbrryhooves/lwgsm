@@ -686,7 +686,7 @@ lwgsmi_parse_smpublish(const char* str, size_t len) {
 }
 
 /**
- * \brief           Parse received +SMSTATE with MQTT connection status
+ * \brief           Parse received c with MQTT connection status
  * \param[in]       str: Input string
  * \param[in]       send_evt: Send event about new MQTT message
  * \return          1 on success, 0 otherwise

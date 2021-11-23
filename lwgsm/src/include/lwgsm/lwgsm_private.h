@@ -555,6 +555,11 @@ typedef struct lwgsm_msg {
             
         } network_system_mode_preference;                       /*!< Mode for system mode */
 
+        struct {
+            lwgsm_network_registration_unsolicited_report_t mode;
+
+        } network_registration_reporting;                          /*!< Mode for unsolicited registration reporting */
+
 
 #endif /* LWGSM_CFG_NETWORK || __DOXYGEN__ */
 #if LWGSM_CFG_FS || __DOXYGEN__

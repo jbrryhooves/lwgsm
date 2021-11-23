@@ -312,6 +312,16 @@ typedef enum {
     LWGSM_NETWORK_MODE_PREFERENCE_TYPE_CATM1_NBIOT = 3 /*!< Both */
 } lwgsm_network_mode_preference_t;
 
+/**
+ * \ingroup         LWGSM_NETWORK
+ * \brief           Network types preference (AT+CMNB?)
+ */
+typedef enum {
+    LWGSM_NETWORK_REGISTRATION_REPORT_NONE = 0,           /*!< */
+    LWGSM_NETWORK_REGISTRATION_REPORT_NORMAL= 1,          /*!< CAT M1 only */
+    LWGSM_NETWORK_REGISTRATION_REPORT_EXTRA_LOCATION= 2,  /*!< NB-IoT only */
+
+} lwgsm_network_registration_unsolicited_report_t;
 
 /**
  * \ingroup         LWGSM_CALL
