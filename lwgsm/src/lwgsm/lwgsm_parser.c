@@ -731,6 +731,92 @@ lwgsmi_parse_smsub(const char* str) {
 
 #endif /* LWGSM_CFG_MQTT || __DOXYGEN__ */
 
+
+#if LWGSM_CFG_GNSS || __DOXYGEN__
+
+/**
+ * \brief           Parse received +CGNSPWR with newly received message
+ * \param[in]       str: Input string
+ * \return          1 on success, 0 otherwise
+ */
+uint8_t
+lwgsmi_parse_cgnspwr(const char* str) {
+    if (*str == '+') {
+        str += 10;
+    }
+    lwgsm.m.gnss_state.power_state = lwgsmi_parse_number(&str);
+    
+    // // copy the newly received message into the event
+    // lwgsm.evt.evt.mqtt_received.message = &lwgsm.m.mqtt_message;
+    // lwgsmi_send_cb(LWGSM_EVT_MQTT_RECEIVED);
+
+    return 1;
+}
+
+/**
+ * \brief           Parse received +CGNSXTRA with newly received message
+ * \param[in]       str: Input string
+ * \return          1 on success, 0 otherwise
+ */
+uint8_t
+lwgsmi_parse_cgnsxtra(const char* str) {
+    if (*str == '+') {
+        str += 11;
+    }
+    uint8_t parseSuccess = 0;
+
+    lwgsm.m.gnss_state.xtra_state = lwgsmi_parse_number(&str);
+    
+    // copy the newly received message into the event
+    lwgsm.evt.evt.xtra_state.mode = lwgsm.m.gnss_state.xtra_state;
+    lwgsmi_send_cb(LWGSM_EVT_GNSS_XTRA_STATE);
+
+    return 1;
+}
+
+/**
+ * \brief           Parse received +CGNSINF with newly received message
+ * \param[in]       str: Input string
+ * \return          1 on success, 0 otherwise
+ */
+uint8_t
+lwgsmi_parse_cgnsinf(const char* str) {
+    if (*str == '+') {
+        str += 10;
+    }
+    char floatBuff[15] = {0};
+
+    lwgsm.m.gnss_state.current_location.gnss_run_status = lwgsmi_parse_number(&str);
+    lwgsm.m.gnss_state.current_location.fix_status = lwgsmi_parse_number(&str);
+    lwgsmi_parse_string(&str, lwgsm.m.gnss_state.current_location.utc_datetime, 18, 0);
+    
+    // read lat (10 characters)
+    lwgsmi_parse_string(&str, floatBuff, 10, 0);
+    floatBuff[11] = 0;
+    lwgsm.m.gnss_state.current_location.latitude = atof(floatBuff);
+
+    // read long (11 characters)
+    lwgsmi_parse_string(&str, floatBuff, 11, 0);
+    floatBuff[12] = 0;
+    lwgsm.m.gnss_state.current_location.longitude = atof(floatBuff);
+
+    // MSL meters
+    lwgsmi_parse_number(&str);
+
+    lwgsmi_parse_string(&str, floatBuff, 10, 0);
+    lwgsm.m.gnss_state.current_location.speed_kmh = lwgsmi_parse_number(&str);
+
+    
+    // copy the newly received message into the event
+    lwgsm.evt.evt.xtra_state.mode = lwgsm.m.gnss_state.xtra_state;
+    lwgsmi_send_cb(LWGSM_EVT_GNSS_XTRA_STATE);
+
+    return 1;
+}
+
+#endif /* LWGSM_CFG_GNSS || __DOXYGEN__ */
+
+
 #if LWGSM_CFG_IP_APP || __DOXYGEN__
 
 

@@ -406,6 +406,26 @@ typedef struct {
     lwgsm_ip_t ip;                              /*!< IP of connection */
 } ping_response_t;
 
+
+typedef struct {
+    uint8_t gnss_run_status;            // 0,1
+    uint8_t fix_status;                 // 0,1
+    char utc_datetime[18];              // yyyyMMddhhmmss.sss
+    double latitude;                    // -90.0 to 90.0
+    double longitude;                   // -180.0 to 180.0
+    double speed_kmh;                   // -180.0 to 180.0
+    uint8_t fix_mode;                   // 0,1,2
+    double hdop;                        // 
+    double pdop;                        // 
+    double vdop;                        // 
+    uint8_t gps_satelites_in_view;      // 0-99
+    uint8_t gnss_satelites_used;        // 0-99
+    uint8_t glonass_satelites_used;     // 0-99
+    double hpa;                         // 
+    double vpa;                         // 
+    
+} lwgsm_gnss_response_t;
+
 /* Forward declarations */
 struct lwgsm_evt;
 struct lwgsm_conn;
@@ -499,6 +519,9 @@ typedef enum lwgsm_cb_type_t {
     LWGSM_EVT_MQTT_RECEIVED,                    /*!< MQTT Message Received */
     LWGSM_EVT_MQTT_STATE,                       /*!< State of MQTT connection changed */
 #endif /* LWGSM_CFG_MQTT || __DOXYGEN__ */
+#if LWGSM_CFG_GNSS || __DOXYGEN__
+    LWGSM_EVT_GNSS_XTRA_STATE,                /*!< GNSS XTRA File use success response */
+#endif /* LWGSM_CFG_GNSS || __DOXYGEN__ */
 #if LWGSM_CFG_IP_APP || __DOXYGEN__
     LWGSM_EVT_IP_APP_CHANGED,                   /*!< IP Application connection changed */
     LWGSM_EVT_PING_RESPONSE,                    /*!< PING response received  */
@@ -636,6 +659,12 @@ typedef struct lwgsm_evt {
             lwgsmr_t res;                       /*!< Result of command */
         } mqtt_state;                           /*!< MQTT State changed. Use with \ref LWGSM_EVT_MQTT_STATE event */
 #endif /* LWGSM_CFG_MQTT || __DOXYGEN__ */
+#if LWGSM_CFG_GNSS || __DOXYGEN__
+        struct {
+            uint8_t mode;                    /*!< The XTRA file mode */
+        } xtra_state;                        /*!< The XTRA file usage state. Use with \ref LWGSM_EVT_GNSS_XTRA_STATE event */
+                      
+#endif /* LWGSM_CFG_GNSS || __DOXYGEN__ */
 #if LWGSM_CFG_IP_APP || __DOXYGEN__
         ip_app_t ip_app;
 #endif /* LWGSM_CFG_IP_APP || __DOXYGEN__ */

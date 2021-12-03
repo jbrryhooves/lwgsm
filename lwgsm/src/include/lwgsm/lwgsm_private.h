@@ -282,6 +282,16 @@ typedef enum {
     LWGSM_CMD_CMNB_SET,                     // Set the preferred selection between CATM and NBIoT
     LWGSM_CMD_CNACT_SET,                    // Set the activation status of the APP Network
     LWGSM_CMD_CNACT_GET,                    // Get the activation status of the APP Network
+    
+    // SIM7080 GNSS
+    LWGSM_CMD_CGNSPWR_SET,                  // Set the power to the GNSS module. (ie. turn it on and off)
+    LWGSM_CMD_CGNSPWR_GET,                  // Get the power state of the GNSS module
+    LWGSM_CMD_CGNSMOD_GET,                  // Get the GNSS config (eg. which satelite system to use )
+    LWGSM_CMD_CGNSMOD_SET,                  // Set the GNSS config 
+    LWGSM_CMD_CGNSCOLD,                     // Do a cold start (~30-60s startup)
+    LWGSM_CMD_CGNSWARM,                     // Do a warm start 
+    LWGSM_CMD_CGNSHOT,                      // Do a hot start
+    LWGSM_CMD_CGNSINF_GET,                  // Get the current location 
 
     LWGSM_CMD_PING,                         // Send a ping request
 
@@ -620,6 +630,18 @@ typedef struct lwgsm_msg {
             lwgsm_datetime_t* datetime;
         } clock;
 #endif /* LWGSM_CFG_CLOCK || __DOXYGEN__ */
+#if LWGSM_CFG_GNSS || __DOXYGEN__
+        struct {
+            struct {
+                uint8_t power_state;
+            } power_set;
+            struct {
+                uint8_t* power_state;
+            } power_get;
+
+            // lwgsm_datetime_t* datetime;
+        } gnss;
+#endif /* LWGSM_CFG_GNSS || __DOXYGEN__ */
     } msg;                                      /*!< Group of different possible message contents */
 } lwgsm_msg_t;
 
@@ -705,6 +727,18 @@ typedef struct {
     lwgsm_sim_state_t state;                    /*!< Current SIM status */
 } lwgsm_sim_t;
 
+
+/**
+ * \brief           GNSS State
+ */
+typedef struct {
+
+    uint8_t               power_state;
+    uint8_t               xtra_state;
+    lwgsm_gnss_response_t current_location;
+    lwgsm_datetime_t      time_stamp;
+} lwgsm_gnss_t;
+
 /**
  * \brief           Network info
  */
@@ -756,6 +790,9 @@ typedef struct {
     lwgsm_mqtt_message_t  mqtt_message;
     uint8_t               mqtt_state;
 #endif /* LWGSM_CFG_MQTT || __DOXYGEN__ */
+#if LWGSM_CFG_GNSS || __DOXYGEN__
+    lwgsm_gnss_t          gnss_state;
+#endif /* LWGSM_CFG_GNSS || __DOXYGEN__ */
 #if LWGSM_CFG_IP_APP || __DOXYGEN__
     ip_app_t              ip_app[4];
     ping_response_t       ping_response;

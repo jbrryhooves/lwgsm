@@ -783,6 +783,14 @@ lwgsmi_parse_received(lwgsm_recv_t* rcv) {
         } else if (!strncmp(rcv->data, "+SMSUB", 6)) {
             lwgsmi_parse_smsub(rcv->data);                  /* Parse +SMSUB message. New message received from the sever*/
 #endif /* LWGSM_CFG_MQTT */
+#if LWGSM_CFG_GNSS
+        } else if (!strncmp(rcv->data, "+CGNSPWR", 8)) {
+            lwgsmi_parse_cgnspwr(rcv->data, rcv->len);    /* Parse +CGNSPWR response  */
+        } else if (!strncmp(rcv->data, "+CGNSINF", 8)) {
+            lwgsmi_parse_cgnsinf(rcv->data);                /* Parse +CGNSINF response with GNSS location location information */
+        } else if (!strncmp(rcv->data, "+CGNSXTRA", 6)) {
+            lwgsmi_parse_cgnsxtra(rcv->data);               /* Parse +CGNSXTRA status*/
+#endif /* LWGSM_CFG_GNSS */
 #if LWGSM_CFG_IP_APP
         } else if (!strncmp(rcv->data, "+SAPBR", 6)) {
             lwgsmi_parse_sapbr(rcv->data);    /* Parse +SAPBR response with IP Application connection details */
