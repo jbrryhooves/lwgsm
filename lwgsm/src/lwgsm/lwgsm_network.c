@@ -140,7 +140,6 @@ uint8_t lwgsm_network_is_attached(void)
 uint8_t lwgsm_network_is_ip_app_activated(void)
 {
     uint8_t res = 0;
-    uint8_t status;
     lwgsm_core_lock();
     for(uint8_t i = 0; i < (sizeof (lwgsm.m.ip_app)/ sizeof (ip_app_t)); i++ )
     {
@@ -210,7 +209,7 @@ lwgsmr_t lwgsm_network_check_reg_status(const lwgsm_api_cmd_evt_fn evt_fn, void 
 
 /**
  * \brief           Set network registration status unsolicited reporting (AT+CREG=)
- * \param[in]       mode: 0= Disable reporting, 1=Enable unsolicited report (+CREG: <stat>), 2= enable unsolicited report with extra location info
+ * \param[in]       mode: 0= Disable reporting, 1=Enable unsolicited report (+CREG: <stat>), 2= enable unsolicited report with extra location info which is only for modules with GPRS
  * \param[in]       evt_fn: Callback function called when command has finished. Set to `NULL` when not used
  * \param[in]       evt_arg: Custom argument for event callback function
  * \param[in]       blocking: Status whether command should be blocking or not
@@ -222,7 +221,7 @@ lwgsmr_t lwgsm_network_set_reg_status(const lwgsm_network_registration_unsolicit
 
     LWGSM_MSG_VAR_ALLOC(msg, blocking);
     LWGSM_MSG_VAR_SET_EVT(msg, evt_fn, evt_arg);
-    LWGSM_MSG_VAR_REF(msg).cmd_def = LWGSM_CMD_CREG_GET;
+    LWGSM_MSG_VAR_REF(msg).cmd_def = LWGSM_CMD_CREG_SET;
     LWGSM_MSG_VAR_REF(msg).msg.network_registration_reporting.mode = mode;
 
     return lwgsmi_send_msg_to_producer_mbox(&LWGSM_MSG_VAR_REF(msg), lwgsmi_initiate_cmd, 2000);

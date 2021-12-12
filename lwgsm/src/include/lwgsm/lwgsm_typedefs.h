@@ -402,7 +402,7 @@ typedef struct {
 } ip_app_t;
 
 typedef struct {
-    uint16_t response_time_ms;                  /*!< Response time of ping request, milliseconds */
+    int16_t response_time_ms;                  /*!< Response time of ping request, milliseconds */
     lwgsm_ip_t ip;                              /*!< IP of connection */
 } ping_response_t;
 
@@ -667,6 +667,7 @@ typedef struct lwgsm_evt {
 #endif /* LWGSM_CFG_GNSS || __DOXYGEN__ */
 #if LWGSM_CFG_IP_APP || __DOXYGEN__
         ip_app_t ip_app;
+        ping_response_t ping_response;
 #endif /* LWGSM_CFG_IP_APP || __DOXYGEN__ */
   } evt;                                      /*!< Callback event union */
 } lwgsm_evt_t;

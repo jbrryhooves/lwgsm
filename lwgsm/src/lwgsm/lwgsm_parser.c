@@ -763,7 +763,7 @@ lwgsmi_parse_cgnsxtra(const char* str) {
     if (*str == '+') {
         str += 11;
     }
-    uint8_t parseSuccess = 0;
+
 
     lwgsm.m.gnss_state.xtra_state = lwgsmi_parse_number(&str);
     
@@ -889,8 +889,12 @@ lwgsmi_parse_cnact(const char* str) {
 
 
     if (CMD_IS_DEF(LWGSM_CMD_CNACT_GET) && lwgsm.msg->msg.ip_app.status != NULL) { /* Check and copy to user variable */
+
         LWGSM_MEMCPY(lwgsm.msg->msg.ip_app.status, &lwgsm.m.ip_app[cid], sizeof(*lwgsm.msg->msg.ip_app.status));
     }
+
+
+    *lwgsm.msg->msg.ip_app.cnact.currentActivationStatus = lwgsm.m.ip_app[0].status;
 
     if(ipChanged == 1)
     {
@@ -916,8 +920,7 @@ lwgsmi_parse_snping4(const char* str) {
   }
 
   uint8_t pingResponseNumber;
-  lwgsm_ip_t ip;
-  uint16_t responseTime = 0;
+
 
   if (CMD_GET_CUR() == LWGSM_CMD_PING) {
     str++;
@@ -930,6 +933,7 @@ lwgsmi_parse_snping4(const char* str) {
     }
 
 
+    LWGSM_MEMCPY(&lwgsm.evt.evt.ping_response, &lwgsm.m.ping_response, sizeof(ping_response_t));
     lwgsmi_send_cb(LWGSM_EVT_PING_RESPONSE);
 
   } 

@@ -611,10 +611,11 @@ typedef struct lwgsm_msg {
             struct {
                 uint8_t pdpIndex;
                 uint8_t activationStatus;
+                uint8_t* currentActivationStatus;
             } cnact;
             struct {
                 lwgsm_ip_t ip;
-                char* host;
+                char host[20];
                 uint8_t isIPAddress;
                 uint8_t pingCount;
                 uint8_t pingSize;

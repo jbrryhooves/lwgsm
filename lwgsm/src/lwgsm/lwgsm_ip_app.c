@@ -92,12 +92,13 @@ lwgsm_ip_app_cnact_set(const uint8_t index, const uint8_t activationStatus, cons
  * \return          \ref lwgsmOK on success, member of \ref lwgsmr_t otherwise
  */
 lwgsmr_t
-lwgsm_ip_app_cnact_get(const lwgsm_api_cmd_evt_fn evt_fn, void* const evt_arg, const uint32_t blocking) {
+lwgsm_ip_app_cnact_get(uint8_t* connection_status, const lwgsm_api_cmd_evt_fn evt_fn, void* const evt_arg, const uint32_t blocking) {
     LWGSM_MSG_VAR_DEFINE(msg);
 
     LWGSM_MSG_VAR_ALLOC(msg, blocking);
     LWGSM_MSG_VAR_SET_EVT(msg, evt_fn, evt_arg);
     LWGSM_MSG_VAR_REF(msg).cmd_def = LWGSM_CMD_CNACT_GET;
+    LWGSM_MSG_VAR_REF(msg).msg.ip_app.cnact.currentActivationStatus = connection_status;
 
     return lwgsmi_send_msg_to_producer_mbox(&LWGSM_MSG_VAR_REF(msg), lwgsmi_initiate_cmd, 2000);
 }
@@ -122,14 +123,14 @@ lwgsm_ip_app_ping(char* host, uint8_t pingCount, uint8_t pingSize, uint16_t time
     LWGSM_MSG_VAR_ALLOC(msg, blocking);
     LWGSM_MSG_VAR_SET_EVT(msg, evt_fn, evt_arg);
     LWGSM_MSG_VAR_REF(msg).cmd_def = LWGSM_CMD_PING;
-    LWGSM_MSG_VAR_REF(msg).msg.ip_app.ping_request.host = host;
+    strncpy(LWGSM_MSG_VAR_REF(msg).msg.ip_app.ping_request.host, host, sizeof(LWGSM_MSG_VAR_REF(msg).msg.ip_app.ping_request.host));
     LWGSM_MSG_VAR_REF(msg).msg.ip_app.ping_request.isIPAddress = 0; 
     LWGSM_MSG_VAR_REF(msg).msg.ip_app.ping_request.pingCount = pingCount;
     LWGSM_MSG_VAR_REF(msg).msg.ip_app.ping_request.pingSize = pingSize;
     LWGSM_MSG_VAR_REF(msg).msg.ip_app.ping_request.timeout = timeout;
     LWGSM_MSG_VAR_REF(msg).msg.ip_app.ping_response = pingResp;
 
-    return lwgsmi_send_msg_to_producer_mbox(&LWGSM_MSG_VAR_REF(msg), lwgsmi_initiate_cmd, 60000);
+    return lwgsmi_send_msg_to_producer_mbox(&LWGSM_MSG_VAR_REF(msg), lwgsmi_initiate_cmd, 10000);
 }
 
 
